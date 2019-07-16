@@ -57,7 +57,8 @@ slider = html.Div([
 app.layout = html.Div([
     html.Div([
         html.H1('Normal Distribution', className="app-header--title"),
-        html.Img(src='/assets/gammaturn.png', className="app-header--image")
+        html.A(html.Img(src='/assets/gammaturn.png', className="app-header--image"),
+               href="https://github.com/gammaturn/normal_distribution")
     ],
         className="app-header"
     ),
