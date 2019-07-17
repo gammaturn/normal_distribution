@@ -69,24 +69,15 @@ app.layout = html.Div([
     ),
     html.Div([pdf_display, cdf_display], className='row'),
     html.Div(slider, className='row')
-], className = "ten columns offset-by-one"
+], className="ten columns offset-by-one"
 )
 
 
 @app.callback(
-    [Output('pdf-display', 'figure'),
-     Output('cdf-display', 'figure')],
+    Output('cdf-display', 'figure'),
     [Input('sigma-slider', 'value')]
 )
-def create_figures(sigma):
-    pdf_var = go.Scatter(
-        x=x,
-        y=pdfs[sigma],  # scipy.stats.norm.pdf(x, scale=sigma / 10.),
-        mode='lines',
-        name='normal distribution<br>(sigma={:.1f})'.format(sigma / 10.),
-        showlegend=True,
-        line={'dash': 'solid', 'width': 3}
-    )
+def create_cdf(sigma):
     cdf_var = go.Scatter(
         x=x,
         y=cdfs[sigma],  # scipy.stats.norm.cdf(x, scale=sigma / 10.),
@@ -96,29 +87,62 @@ def create_figures(sigma):
         line={'dash': 'solid', 'width': 3}
     )
 
-    return (go.Figure(data=[pdf_std, pdf_var],
-                      layout={
-                          'xaxis': {'title': {'text': 'random variable'}},
-                          'yaxis': {'title': {'text': 'pdf'}},
-                          'margin': {'t': 50, 'b': 80, 'l': 20, 'r': 20},
-                          'template': 'ggplot2',
-                          'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
-                                       '#ff7f00', '#ffff33', '#a65628', '#f781bf',
-                                       '#999999'],
-                          'legend': {'xanchor': 'right', 'yanchor': 'top', 'x': 1, 'y': 1}
-                      }),
-            go.Figure(data=[cdf_std, cdf_var],
-                      layout={
-                          'xaxis': {'title': {'text': 'random variable'}},
-                          'yaxis': {'title': {'text': 'cdf'}},
-                          'margin': {'t': 50, 'b': 80, 'l': 50, 'r': 20},
-                          'template': 'ggplot2',
-                          'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
-                                       '#ff7f00', '#ffff33', '#a65628', '#f781bf',
-                                       '#999999'],
-                          'legend': {'xanchor': 'right', 'yanchor': 'bottom', 'x': 1, 'y': 0.05}
+    return go.Figure(data=[cdf_std, cdf_var],
+                     layout={
+                         'xaxis': {'title': {'text': 'random variable'}},
+                         'yaxis': {'title': {'text': 'cdf'}},
+                         'margin': {'t': 50, 'b': 80, 'l': 50, 'r': 20},
+                         'template': 'ggplot2',
+                         'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
+                                      '#ff7f00', '#ffff33', '#a65628', '#f781bf',
+                                      '#999999'],
+                         'legend': {'xanchor': 'right', 'yanchor': 'bottom', 'x': 1, 'y': 0.05}
+                     })
+
+
+@app.callback(
+    Output('pdf-display', 'figure'),
+    [Input('sigma-slider', 'value'),
+     Input('cdf-display', 'clickData')]
+)
+def create_pdf(sigma, clickdata):
+    pdf_var = go.Scatter(
+        x=x,
+        y=pdfs[sigma],  # scipy.stats.norm.pdf(x, scale=sigma / 10.),
+        mode='lines',
+        name='normal distribution<br>(sigma={:.1f})'.format(sigma / 10.),
+        showlegend=True,
+        line={'dash': 'solid', 'width': 3}
+    )
+
+    data = [pdf_std, pdf_var]
+
+    if clickdata is not None:
+        if clickdata['points'][0]['curveNumber'] == 1:
+            index = clickdata['points'][0]['pointIndex']
+            xval = clickdata['points'][0]['x']
+            data.append(go.Scatter(
+                x=x[:index+1],
+                y=pdfs[sigma][:index+1],
+                mode='none',
+                showlegend=False,
+                fill='tozeroy',
+                hoveron='fills',
+                text='area: {:.3f}'.format(scipy.stats.norm.cdf(xval, scale=sigma/10.)),
+                hoverinfo='text'
+            ))
+
+    return go.Figure(data=data,
+                     layout={
+                         'xaxis': {'title': {'text': 'random variable'}},
+                         'yaxis': {'title': {'text': 'pdf'}},
+                         'margin': {'t': 50, 'b': 80, 'l': 20, 'r': 20},
+                         'template': 'ggplot2',
+                         'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
+                                      '#ff7f00', '#ffff33', '#a65628', '#f781bf',
+                                      '#999999'],
+                         'legend': {'xanchor': 'right', 'yanchor': 'top', 'x': 1, 'y': 1}
                       })
-            )
 
 
 if __name__ == '__main__':
