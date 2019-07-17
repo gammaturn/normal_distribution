@@ -22,20 +22,25 @@ x_max = 5.
 n_points = 150
 x = np.linspace(-x_max, x_max, n_points)
 
+sigma_min = 5
+sigma_max = 30
+pdfs = {i: scipy.stats.norm.pdf(x, scale=i/10.) for i in range(sigma_min, sigma_max+1)}
+cdfs = {i: scipy.stats.norm.cdf(x, scale=i/10.) for i in range(sigma_min, sigma_max+1)}
+
 pdf_std = go.Scatter(
     x=x,
-    y=scipy.stats.norm.pdf(x, scale=1.0),  # standard normal distribution
+    y=pdfs[10],  # standard normal distribution, scipy.stats.norm.pdf(x, scale=1.0)
     mode='lines',
     name='standard normal<br>distribution',
-    showlegend=False,
+    showlegend=True,
     line={'dash': 'dash', 'width': 1.5}
 )
 cdf_std = go.Scatter(
     x=x,
-    y=scipy.stats.norm.cdf(x, scale=1.0),  # cdf of standard normal distribution
+    y=cdfs[10],  # cdf of standard normal distribution, scipy.stats.norm.cdf(x, scale=1.0)
     mode='lines',
     name='standard normal<br>distribution',
-    showlegend=False,
+    showlegend=True,
     line={'dash': 'dash', 'width': 1.5}
 )
 
@@ -48,8 +53,8 @@ slider = html.Div([
     html.Label('Use the slider to set the standard deviation of the normal distribution:'),
     dcc.Slider(
         id='sigma-slider',
-        min=5, max=30, step=1,
-        marks={i: '{:.1f}'.format(i / 10) for i in range(5, 31, 5)},
+        min=sigma_min, max=sigma_max, step=1,
+        marks={i: '{:.1f}'.format(i / 10) for i in range(5, sigma_max+1, 5)},
         value=10
     ),
 ], className="six columns offset-by-three")
@@ -76,18 +81,18 @@ app.layout = html.Div([
 def create_figures(sigma):
     pdf_var = go.Scatter(
         x=x,
-        y=scipy.stats.norm.pdf(x, scale=sigma / 10.),
+        y=pdfs[sigma],  # scipy.stats.norm.pdf(x, scale=sigma / 10.),
         mode='lines',
         name='normal distribution<br>(sigma={:.1f})'.format(sigma / 10.),
-        showlegend=False,
+        showlegend=True,
         line={'dash': 'solid', 'width': 3}
     )
     cdf_var = go.Scatter(
         x=x,
-        y=scipy.stats.norm.cdf(x, scale=sigma / 10.),
+        y=cdfs[sigma],  # scipy.stats.norm.cdf(x, scale=sigma / 10.),
         mode='lines',
         name='normal distribution<br>(sigma={:.1f})'.format(sigma / 10.),
-        showlegend=False,
+        showlegend=True,
         line={'dash': 'solid', 'width': 3}
     )
 
@@ -99,7 +104,8 @@ def create_figures(sigma):
                           'template': 'ggplot2',
                           'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
                                        '#ff7f00', '#ffff33', '#a65628', '#f781bf',
-                                       '#999999']
+                                       '#999999'],
+                          'legend': {'xanchor': 'right', 'yanchor': 'top', 'x': 1, 'y': 1}
                       }),
             go.Figure(data=[cdf_std, cdf_var],
                       layout={
@@ -109,7 +115,8 @@ def create_figures(sigma):
                           'template': 'ggplot2',
                           'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
                                        '#ff7f00', '#ffff33', '#a65628', '#f781bf',
-                                       '#999999']
+                                       '#999999'],
+                          'legend': {'xanchor': 'right', 'yanchor': 'bottom', 'x': 1, 'y': 0.05}
                       })
             )
 
