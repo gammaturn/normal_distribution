@@ -60,22 +60,23 @@ slider = html.Div([
 ], className="pretty_container six columns offset-by-three")
 
 app.layout = html.Div([
+
     html.Div([
-        html.H1('Normal Distribution', className="ten columns"),
+        html.Div([
+            html.H2('Normal Distribution')
+        ], style={'width': '80%'}),
+
         html.Div([
             html.A(html.Img(src='/assets/gammaturn.png',
-                            style={'position': 'relative',
-                                   'vertical-align': 'middle',
-                                   'display': 'inline',
-                                   'float': 'right',
-                                   'height': '70px'}),
+            style={'height': '60px', 'float': 'right', 'margin-top': '8px'}),
                    href="https://github.com/gammaturn/normal_distribution")
-        ], className="two columns")
-    ],
-        className="row flex-display"
-    ),
+        ], style={'width': '20%'})
+    ], className="row flex-display", style={'margin-bottom': '10px'}),
+
     html.Div([pdf_display, cdf_display], className='row flex-display'),
+
     html.Div(slider, className='row flex-display')
+
 ], style={"display": "flex", "flex-direction": "column"}
 )
 
