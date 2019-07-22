@@ -9,9 +9,7 @@ import plotly.graph_objs as go
 import numpy as np
 import scipy.stats
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__)
 
 server = app.server
 
@@ -45,31 +43,40 @@ cdf_std = go.Scatter(
 )
 
 # components of the app
-pdf_display = html.Div(dcc.Graph(id='pdf-display'), className='six columns')
+pdf_display = html.Div([dcc.Graph(id='pdf-display')], className='pretty_container six columns')
 
-cdf_display = html.Div(dcc.Graph(id='cdf-display'), className='six columns')
+cdf_display = html.Div([dcc.Graph(id='cdf-display')], className='pretty_container six columns')
 
 slider = html.Div([
-    html.Label('Use the slider to set the standard deviation of the normal distribution:'),
+    html.P('Use the slider to set the standard deviation of the normal distribution:',
+           className="control_label"),
     dcc.Slider(
         id='sigma-slider',
         min=sigma_min, max=sigma_max, step=1,
         marks={i: '{:.1f}'.format(i / 10) for i in range(5, sigma_max+1, 5)},
-        value=10
+        value=10,
+        className="dcc_control"
     ),
-], className="six columns offset-by-three")
+], className="pretty_container six columns offset-by-three")
 
 app.layout = html.Div([
     html.Div([
-        html.H1('Normal Distribution', className="app-header--title"),
-        html.A(html.Img(src='/assets/gammaturn.png', className="app-header--image"),
-               href="https://github.com/gammaturn/normal_distribution")
+        html.H1('Normal Distribution', className="ten columns"),
+        html.Div([
+            html.A(html.Img(src='/assets/gammaturn.png',
+                            style={'position': 'relative',
+                                   'vertical-align': 'middle',
+                                   'display': 'inline',
+                                   'float': 'right',
+                                   'height': '70px'}),
+                   href="https://github.com/gammaturn/normal_distribution")
+        ], className="two columns")
     ],
-        className="app-header"
+        className="row flex-display"
     ),
-    html.Div([pdf_display, cdf_display], className='row'),
-    html.Div(slider, className='row')
-], className="ten columns offset-by-one"
+    html.Div([pdf_display, cdf_display], className='row flex-display'),
+    html.Div(slider, className='row flex-display')
+], style={"display": "flex", "flex-direction": "column"}
 )
 
 
@@ -91,12 +98,13 @@ def create_cdf(sigma):
                      layout={
                          'xaxis': {'title': {'text': 'random variable'}},
                          'yaxis': {'title': {'text': 'cdf'}},
-                         'margin': {'t': 50, 'b': 80, 'l': 50, 'r': 20},
+                         'margin': {'t': 60, 'b': 20, 'l': 10, 'r': 10},
                          'template': 'ggplot2',
                          'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
                                       '#ff7f00', '#ffff33', '#a65628', '#f781bf',
                                       '#999999'],
-                         'legend': {'xanchor': 'right', 'yanchor': 'bottom', 'x': 1, 'y': 0.05}
+                         'legend': {'xanchor': 'right', 'yanchor': 'bottom', 'x': 1, 'y': 0.05},
+                         'title': go.layout.Title(text="Cumulative distribution function", xref="paper", x=0)
                      })
 
 
@@ -136,13 +144,14 @@ def create_pdf(sigma, clickdata):
                      layout={
                          'xaxis': {'title': {'text': 'random variable'}},
                          'yaxis': {'title': {'text': 'pdf'}},
-                         'margin': {'t': 50, 'b': 80, 'l': 20, 'r': 20},
+                         'margin': {'t': 60, 'b': 20, 'l': 10, 'r': 10},
                          'template': 'ggplot2',
                          'colorway': ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
                                       '#ff7f00', '#ffff33', '#a65628', '#f781bf',
                                       '#999999'],
-                         'legend': {'xanchor': 'right', 'yanchor': 'top', 'x': 1, 'y': 1}
-                      })
+                         'legend': {'xanchor': 'right', 'yanchor': 'top', 'x': 1, 'y': 1},
+                         'title': go.layout.Title(text="Probability density function", xref="paper", x=0)
+                     })
 
 
 if __name__ == '__main__':
