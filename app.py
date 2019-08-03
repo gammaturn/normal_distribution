@@ -43,9 +43,18 @@ cdf_std = go.Scatter(
 )
 
 # components of the app
-pdf_display = html.Div([dcc.Graph(id='pdf-display')], className='pretty_container six columns')
+# header text plus logo
+header = html.Div([
+    html.H3('Normal Distribution', style={'display': 'inline'}),
+    html.A(html.Img(src='/assets/gammaturn.png',
+                    style={'float': 'right',
+                           'height': '40px'}),
+           href="https://github.com/gammaturn/normal_distribution")
+    ], className='pretty_container twelve columns')
 
-cdf_display = html.Div([dcc.Graph(id='cdf-display')], className='pretty_container six columns')
+pdf_display = html.Div([dcc.Graph(id='pdf-display')])
+
+cdf_display = html.Div([dcc.Graph(id='cdf-display')])
 
 slider = html.Div([
     html.P('Use the slider to set the standard deviation of the normal distribution:',
@@ -61,19 +70,16 @@ slider = html.Div([
 
 app.layout = html.Div([
 
+    html.Div(header, className='row flex-display'),
+
     html.Div([
         html.Div([
-            html.H2('Normal Distribution')
-        ], style={'width': '80%'}),
-
+            pdf_display
+        ], className='pretty_container six columns'),
         html.Div([
-            html.A(html.Img(src='/assets/gammaturn.png',
-            style={'height': '60px', 'float': 'right', 'margin-top': '8px'}),
-                   href="https://github.com/gammaturn/normal_distribution")
-        ], style={'width': '20%'})
-    ], className="row flex-display", style={'margin-bottom': '10px'}),
-
-    html.Div([pdf_display, cdf_display], className='row flex-display'),
+            cdf_display
+        ], className='pretty_container six columns', style={'margin-left': '20px'})
+    ], className='row flex-display'),
 
     html.Div(slider, className='row flex-display')
 
