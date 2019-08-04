@@ -37,10 +37,11 @@
 .container {
   position: relative;
   width: 100%;
-  max-width: 960px;
+  /*max-width: 960px;*/
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 0;
   box-sizing: border-box;
+  /*border: 2px red solid;*/
 }
 .column,
 .columns {
@@ -541,6 +542,9 @@ there.
   }
   .four.columns {
     width: calc(100% / 3);
+  }
+  .fourpointfive.columns {
+    width: 37.5%;
   }
   .five.columns {
     width: calc(100% * 5 / 12);

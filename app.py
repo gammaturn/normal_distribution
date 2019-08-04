@@ -29,7 +29,7 @@ pdf_std = go.Scatter(
     x=x,
     y=pdfs[10],  # standard normal distribution, scipy.stats.norm.pdf(x, scale=1.0)
     mode='lines',
-    name='standard normal<br>distribution',
+    name='std. normal<br>distr.',
     showlegend=True,
     line={'dash': 'dash', 'width': 1.5}
 )
@@ -37,7 +37,7 @@ cdf_std = go.Scatter(
     x=x,
     y=cdfs[10],  # cdf of standard normal distribution, scipy.stats.norm.cdf(x, scale=1.0)
     mode='lines',
-    name='standard normal<br>distribution',
+    name='std. normal<br>distr.',
     showlegend=True,
     line={'dash': 'dash', 'width': 1.5}
 )
@@ -48,42 +48,57 @@ header = html.Div([
     html.H3('Normal Distribution', style={'display': 'inline'}),
     html.A(html.Img(src='/assets/gammaturn.png',
                     style={'float': 'right',
-                           'height': '40px'}),
+                           'height': '50px'}),
            href="https://github.com/gammaturn/normal_distribution")
     ], className='pretty_container twelve columns')
 
-pdf_display = html.Div([dcc.Graph(id='pdf-display')])
+# Plotly figures
+pdf_display = dcc.Graph(id='pdf-display')
+cdf_display = dcc.Graph(id='cdf-display')
 
-cdf_display = html.Div([dcc.Graph(id='cdf-display')])
-
+# slider to choose sigma plus explanatory text
 slider = html.Div([
-    html.P('Use the slider to set the standard deviation of the normal distribution:',
+
+    html.P("""
+    The normal distribution is a symmetric continuous distribution and is defined by two parameters
+    (\u03BC and \u03C3). The mean value \u03BC represents the location of the maximum
+    and the standard deviation \u03C3 the width of the distribution. The so called 'standard normal
+    distribution' (red dashed line) is a special case with \u03BC=0 and \u03C3=1.
+    """),
+
+    html.P('Use the slider to set \u03C3:',
            className="control_label"),
+
     dcc.Slider(
         id='sigma-slider',
         min=sigma_min, max=sigma_max, step=1,
         marks={i: '{:.1f}'.format(i / 10) for i in range(5, sigma_max+1, 5)},
-        value=10,
+        value=13,
         className="dcc_control"
     ),
-], className="pretty_container six columns offset-by-three")
+
+    html.P("""
+    Click on the cumulative distribution function (cdf) to get a representation
+    of the corresponding area under the probability density function (pdf).
+    """),
+
+], className="pretty_container three columns")
 
 app.layout = html.Div([
 
     html.Div(header, className='row flex-display'),
 
     html.Div([
+        slider,
         html.Div([
             pdf_display
-        ], className='pretty_container six columns'),
+        ], className='pretty_container fourpointfive columns'),
         html.Div([
             cdf_display
-        ], className='pretty_container six columns', style={'margin-left': '20px'})
+        ], className='pretty_container fourpointfive columns')
     ], className='row flex-display'),
 
-    html.Div(slider, className='row flex-display')
-
-], style={"display": "flex", "flex-direction": "column"}
+], className='container container-display', style={"width": "97.5%"}
 )
 
 
@@ -96,7 +111,7 @@ def create_cdf(sigma):
         x=x,
         y=cdfs[sigma],  # scipy.stats.norm.cdf(x, scale=sigma / 10.),
         mode='lines',
-        name='normal distribution<br>(sigma={:.1f})'.format(sigma / 10.),
+        name='normal distr.<br>(\u03C3={:.1f})'.format(sigma / 10.),
         showlegend=True,
         line={'dash': 'solid', 'width': 3}
     )
@@ -125,7 +140,7 @@ def create_pdf(sigma, clickdata):
         x=x,
         y=pdfs[sigma],  # scipy.stats.norm.pdf(x, scale=sigma / 10.),
         mode='lines',
-        name='normal distribution<br>(sigma={:.1f})'.format(sigma / 10.),
+        name='normal distr.<br>(\u03C3={:.1f})'.format(sigma / 10.),
         showlegend=True,
         line={'dash': 'solid', 'width': 3}
     )
